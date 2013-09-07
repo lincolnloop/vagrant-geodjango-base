@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# to build django-base-v2.box:
+# to build geodjango-base-v1.0.box
 vagrant up
-rm -f django-base-v2.1.box
-vagrant package --output django-base-v2.1.box
+rm -f geodjango-base-v1.0.box
+vagrant package --output geodjango-base-v1.0.box
 
 # to install locally:
-# vagrant box add django-base-v2.1 django-base-v2.1.box
+# vagrant box add geodjango-base-v1.0 geodjango-base-v1.0.box
