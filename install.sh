@@ -29,37 +29,48 @@ if ! command -v psql; then
     /etc/init.d/postgresql reload
 fi
 
+#PostGIS, according to http://trac.osgeo.org/postgis/wiki/UsersWikiPostGIS20Ubuntu1204src
+apt-get install -y build-essential postgresql-server-dev-$PGSQL_VERSION libxml2-dev libproj-dev libjson0-dev xsltproc docbook-xsl docbook-mathml
+apt-get install -y libgdal1-dev
+#GEOS
+wget http://download.osgeo.org/geos/geos-3.3.9.tar.bz2
+tar xfj geos-3.3.9.tar.bz2
+cd geos-3.3.9
+./configure
+make
+make install
+cd ..
+
+wget http://download.osgeo.org/postgis/source/postgis-2.0.4.tar.gz
+tar xfz postgis-2.0.4.tar.gz
+cd postgis-2.0.4
+./configure
+make
+make install
+ldconfig
+make comments-install
+
+ln -sf /usr/share/postgresql-common/pg_wrapper /usr/local/bin/shp2pgsql
+ln -sf /usr/share/postgresql-common/pg_wrapper /usr/local/bin/pgsql2shp
+ln -sf /usr/share/postgresql-common/pg_wrapper /usr/local/bin/raster2pgsql
+
+#GDAL bin
+apt-get install -y gdal-bin
+
+#Vim
+apt-get install -y vim
+cp /vagrant_data/vimrc /home/vagrant/.vimrc 
+
+#unzip
+apt-get install -y unzip
+
 # virtualenv global setup
 if ! command -v pip; then
     easy_install -U pip
 fi
 if [[ ! -f /usr/local/bin/virtualenv ]]; then
-    easy_install virtualenv virtualenvwrapper stevedore virtualenv-clone
+    pip install virtualenv virtualenvwrapper stevedore virtualenv-clone
 fi
 
 # bash environment global setup
 cp -p /vagrant_data/bashrc /home/vagrant/.bashrc
-
-# install our common Python packages in a temporary virtual env so that they'll get cached
-if [[ ! -e /home/vagrant/.pip_download_cache ]]; then
-    su - vagrant -c "mkdir -p /home/vagrant/.pip_download_cache && \
-        virtualenv /home/vagrant/yayforcaching && \
-        PIP_DOWNLOAD_CACHE=/home/vagrant/.pip_download_cache /home/vagrant/yayforcaching/bin/pip install -r /vagrant_data/common_requirements.txt && \
-        rm -rf /home/vagrant/yayforcaching"
-fi
-
-# Node.js, CoffeeScript and LESS
-if ! command -v npm; then
-    wget http://nodejs.org/dist/v0.10.0/node-v0.10.0.tar.gz
-    tar xzf node-v0.10.0.tar.gz
-    cd node-v0.10.0/
-    ./configure && make && make install
-    cd ..
-    rm -rf node-v0.10.0/ node-v0.10.0.tar.gz
-fi
-if ! command -v coffee; then
-    npm install -g coffee-script
-fi
-if ! command -v lessc; then
-    npm install -g less
-fi
