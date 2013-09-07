@@ -1,4 +1,4 @@
-vagrant-django-base
+vagrant-geodjango-base
 ===================
 
 Forked from the @torchbox vagrant-django-base project, modified to work with GeoDjango.  
