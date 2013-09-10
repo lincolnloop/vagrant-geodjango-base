@@ -63,6 +63,13 @@ DATABASES = {
 }
 ```
 
+Be sure to start the server like so:
+
+```sh
+python manage.py runserver 0.0.0.0:8000
+```
+The default server will bind to the loopback interface, adding the argument will allow it to bind to all interfaces.
+
 Enjoy!
 
 
