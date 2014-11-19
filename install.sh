@@ -59,7 +59,7 @@ apt-get install -y gdal-bin
 
 #Vim
 apt-get install -y vim
-cp /vagrant_data/vimrc /home/vagrant/.vimrc 
+cp /vagrant_data/vimrc /home/vagrant/.vimrc
 
 #unzip
 apt-get install -y unzip
@@ -74,3 +74,45 @@ fi
 
 # bash environment global setup
 cp -p /vagrant_data/bashrc /home/vagrant/.bashrc
+
+
+echo '|||||||| --  MFR customizations  -- |||||||'
+echo '===== Installing other prereqs'
+# Other pre-reqs for project or bootstrapping
+apt-get install libxml2-dev libxslt1-dev curl
+
+
+echo '===== Upgrading to Ruby 2.0'
+# based on http://stackoverflow.com/questions/16222738/how-do-i-install-ruby-2-0-0-correctly-on-ubuntu-12-04
+CUR_DIR=`pwd`
+apt-get -y install build-essential zlib1g-dev libssl-dev libreadline6-dev libyaml-dev
+cd /tmp
+wget http://cache.ruby-lang.org/pub/ruby/2.0/ruby-2.0.0-p481.tar.gz
+tar -xvzf ruby-2.0.0-p481.tar.gz
+cd ruby-2.0.0-p481/
+./configure --prefix=/usr/local
+make
+make install
+cd $CUR_DIR
+
+
+echo '===== Installing bundler gem'
+gem update --system
+gem install bundler
+
+
+echo '===== Creating PostgreSQL databases and users'
+su postgres << EOF
+    psql -c "CREATE USER vagrant CREATEDB CREATEUSER;"
+EOF
+
+createdb -U vagrant mfr
+echo 'CREATE EXTENSION postgis' | psql -U vagrant mfr
+
+# TODO install bundles
+
+# Install node/npm
+
+
+
+
